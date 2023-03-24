@@ -8,9 +8,12 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-    navigate("/home");
+  const handleLogin = (result) => {
+    if (result.email !== undefined) {
+      setIsLoggedIn(true);
+      navigate("/home");
+    }
+    return;
   };
 
   return (

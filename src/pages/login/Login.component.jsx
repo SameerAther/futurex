@@ -6,7 +6,7 @@ export const LoginForm = ({ handleLogin }) => {
   const signInWithPopup = () => {
     signInWithGooglePopup()
       .then((result) => {
-        handleLogin();
+        handleLogin(result);
       })
       .catch((error) => {
         console.log(error);

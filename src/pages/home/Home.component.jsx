@@ -2,39 +2,41 @@ import { useState, useEffect } from "react";
 import { ModifiedTable } from "../../components/table/table.component";
 import { CreateEmployee } from "../../components/creation/creation.component";
 import AddEmployeeModal from "../../components/modal/modal.component";
-import { saveUserData, getUserData, email } from "../../utils/firebase.utils";
+import {
+  saveUserData,
+  getUserData,
+  email,
+  auth,
+} from "../../utils/firebase.utils";
 
 export const Homepage = () => {
   const [currentRow, setCurrentRow] = useState(null);
-
-  const [rows, setRows] = useState(() => {
-    const storedRows = JSON.parse(localStorage.getItem("rows")) || [];
-    return storedRows;
-  });
+  const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    // const savedRows = localStorage.getItem("rows");
-    // if (savedRows) {
-    //   setRows(JSON.parse(savedRows));
-    // }
-    try {
-      console.log("User Data", getUserData(email));
-    } catch (e) {
-      console.log(e);
-      alert("Error to load user data");
-    }
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        try {
+          const userData = await getUserData(email);
+          setRows(userData);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    });
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
-    // localStorage.setItem("rows", JSON.stringify(rows));
-    saveUserData(rows);
+    if (rows.length > 0) {
+      saveUserData(rows);
+    }
   }, [rows]);
 
   const handleAddEmployee = async (newRow) => {
     try {
-      const storedRows = (await getUserData(email))[0] || [];
+      const storedRows = (await getUserData(email)) || [];
       const updatedRows = [...storedRows, newRow];
-      localStorage.setItem("rows", JSON.stringify(updatedRows));
       setRows(updatedRows);
     } catch (error) {
       console.log(error);

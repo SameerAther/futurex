@@ -46,7 +46,6 @@ export const signInWithGooglePopup = async () => {
 
 export const signOutUser = async () => {
   await signOut(auth);
-  // Disable network access to prevent data persistence
   await disableNetwork(db);
 };
 
@@ -65,7 +64,6 @@ export const getUserData = async (email) => {
   try {
     const docRef = doc(db, "users", email);
     const docSnap = await getDoc(docRef);
-    console.log(docSnap.data().rows[0]);
     if (docSnap.exists()) {
       return docSnap.data().rows;
     } else {
